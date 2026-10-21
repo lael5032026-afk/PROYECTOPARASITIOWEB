@@ -9,6 +9,8 @@ export type DashboardSummary = {
   flowsChange: number
 }
 
+export type UpdateInventoryProduct = CreateInventoryProduct
+
 export type InventoryProduct = {
   id: number
   name: string
@@ -65,6 +67,22 @@ export async function createInventoryProduct(product: CreateInventoryProduct): P
 
   if (!response.ok) throw new Error('No se pudo crear el producto')
   return response.json() as Promise<InventoryProduct>
+}
+
+export async function updateInventoryProduct(id: number, product: UpdateInventoryProduct): Promise<InventoryProduct> {
+  const response = await fetch(`${apiBaseUrl}/api/inventory/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(product),
+  })
+
+  if (!response.ok) throw new Error('No se pudo actualizar el producto')
+  return response.json() as Promise<InventoryProduct>
+}
+
+export async function deleteInventoryProduct(id: number): Promise<void> {
+  const response = await fetch(`${apiBaseUrl}/api/inventory/${id}`, { method: 'DELETE' })
+  if (!response.ok) throw new Error('No se pudo eliminar el producto')
 }
 
 function isDashboardSummary(value: unknown): value is DashboardSummary {

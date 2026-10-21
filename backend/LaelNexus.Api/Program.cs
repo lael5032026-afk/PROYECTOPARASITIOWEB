@@ -95,6 +95,37 @@ app.MapPost("/api/inventory", async (CreateInventoryProduct request, InventoryDb
     return Results.Created($"/api/inventory/{product.Id}", product);
 });
 
+app.MapPut("/api/inventory/{id:int}", async (int id, UpdateInventoryProduct request, InventoryDbContext db) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Category) || request.Stock < 0 || request.MinimumStock < 0 || request.Price < 0)
+    {
+        return Results.BadRequest(new { message = "Nombre, categoría, stock mínimo, stock y precio deben ser válidos." });
+    }
+
+    var product = await db.InventoryProducts.FindAsync(id);
+    if (product is null) return Results.NotFound();
+
+    product.Name = request.Name.Trim();
+    product.Category = request.Category.Trim();
+    product.Stock = request.Stock;
+    product.MinimumStock = request.MinimumStock;
+    product.Price = request.Price;
+    product.Status = request.Stock == 0 ? "Agotado" : request.Stock <= request.MinimumStock ? "Bajo" : "Óptimo";
+
+    await db.SaveChangesAsync();
+    return Results.Ok(product);
+});
+
+app.MapDelete("/api/inventory/{id:int}", async (int id, InventoryDbContext db) =>
+{
+    var product = await db.InventoryProducts.FindAsync(id);
+    if (product is null) return Results.NotFound();
+
+    db.InventoryProducts.Remove(product);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
+
 app.Run();
 
 internal sealed record DashboardSummary(
@@ -120,6 +151,13 @@ public sealed class InventoryProduct
 }
 
 internal sealed record CreateInventoryProduct(
+    string Name,
+    string Category,
+    int Stock,
+    int MinimumStock,
+    decimal Price);
+
+internal sealed record UpdateInventoryProduct(
     string Name,
     string Category,
     int Stock,
