@@ -14,6 +14,7 @@ import {
   Menu,
   Network,
   Search,
+  ShoppingBag,
   Settings2,
   ShieldCheck,
   Sparkles,
@@ -221,6 +222,7 @@ function App() {
               <Icon size={18} /><span>{name}</span>{!enabled && <span className="nav-badge">Próximamente</span>}
             </button>
           ))}
+          <a className="nav-item" href="/tienda"><ShoppingBag size={18} /><span>Tienda pública</span><ArrowUpRight size={14} /></a>
           <div className="nav-caption nav-caption-spaced">SISTEMA</div>
           <button className="nav-item" disabled title="Integración backend pendiente"><Settings2 size={18} /><span>Configuración</span><span className="nav-badge">Próximamente</span></button>
         </nav>

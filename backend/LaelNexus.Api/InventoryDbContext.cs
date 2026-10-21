@@ -4,6 +4,8 @@ public sealed class InventoryDbContext(DbContextOptions<InventoryDbContext> opti
 {
     public DbSet<InventoryProduct> InventoryProducts => Set<InventoryProduct>();
     public DbSet<CrmCustomer> CrmCustomers => Set<CrmCustomer>();
+    public DbSet<StoreOrder> StoreOrders => Set<StoreOrder>();
+    public DbSet<StoreOrderItem> StoreOrderItems => Set<StoreOrderItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,6 +29,29 @@ public sealed class InventoryDbContext(DbContextOptions<InventoryDbContext> opti
             entity.Property(customer => customer.Phone).HasMaxLength(40);
             entity.Property(customer => customer.Status).HasMaxLength(30).IsRequired();
             entity.HasIndex(customer => customer.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<StoreOrder>(entity =>
+        {
+            entity.HasKey(order => order.Id);
+            entity.Property(order => order.CustomerName).HasMaxLength(160).IsRequired();
+            entity.Property(order => order.Email).HasMaxLength(160).IsRequired();
+            entity.Property(order => order.Phone).HasMaxLength(40).IsRequired();
+            entity.Property(order => order.ShippingAddress).HasMaxLength(300).IsRequired();
+            entity.Property(order => order.Status).HasMaxLength(40).IsRequired();
+            entity.Property(order => order.Total).HasPrecision(18, 2);
+            entity.HasMany(order => order.Items)
+                .WithOne(item => item.Order)
+                .HasForeignKey(item => item.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<StoreOrderItem>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.ProductName).HasMaxLength(160).IsRequired();
+            entity.Property(item => item.Sku).HasMaxLength(40).IsRequired();
+            entity.Property(item => item.UnitPrice).HasPrecision(18, 2);
         });
     }
 }

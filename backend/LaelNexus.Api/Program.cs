@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +28,33 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
     db.Database.EnsureCreated();
     db.Database.ExecuteSqlRaw("IF OBJECT_ID(N'[CrmCustomers]', N'U') IS NULL CREATE TABLE [CrmCustomers] ([Id] int NOT NULL IDENTITY, [Name] nvarchar(160) NOT NULL, [Email] nvarchar(160) NOT NULL, [Company] nvarchar(160) NOT NULL, [Phone] nvarchar(40) NOT NULL, [Status] nvarchar(30) NOT NULL, [LastContact] datetime2 NOT NULL, [Notes] nvarchar(max) NOT NULL, CONSTRAINT [PK_CrmCustomers] PRIMARY KEY ([Id])); IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_CrmCustomers_Email') CREATE UNIQUE INDEX [IX_CrmCustomers_Email] ON [CrmCustomers] ([Email]);");
+    db.Database.ExecuteSqlRaw("""
+        IF OBJECT_ID(N'[StoreOrders]', N'U') IS NULL
+            CREATE TABLE [StoreOrders] (
+                [Id] int NOT NULL IDENTITY,
+                [CustomerName] nvarchar(160) NOT NULL,
+                [Email] nvarchar(160) NOT NULL,
+                [Phone] nvarchar(40) NOT NULL,
+                [ShippingAddress] nvarchar(300) NOT NULL,
+                [CreatedAt] datetime2 NOT NULL,
+                [Status] nvarchar(40) NOT NULL,
+                [Total] decimal(18,2) NOT NULL,
+                CONSTRAINT [PK_StoreOrders] PRIMARY KEY ([Id])
+            );
+        IF OBJECT_ID(N'[StoreOrderItems]', N'U') IS NULL
+            CREATE TABLE [StoreOrderItems] (
+                [Id] int NOT NULL IDENTITY,
+                [OrderId] int NOT NULL,
+                [ProductId] int NOT NULL,
+                [ProductName] nvarchar(160) NOT NULL,
+                [Sku] nvarchar(40) NOT NULL,
+                [Quantity] int NOT NULL,
+                [UnitPrice] decimal(18,2) NOT NULL,
+                CONSTRAINT [PK_StoreOrderItems] PRIMARY KEY ([Id]),
+                CONSTRAINT [FK_StoreOrderItems_StoreOrders_OrderId]
+                    FOREIGN KEY ([OrderId]) REFERENCES [StoreOrders] ([Id]) ON DELETE CASCADE
+            );
+        """);
 
     if (!db.InventoryProducts.Any())
     {
@@ -82,6 +111,86 @@ app.MapGet("/api/inventory", async (string? search, string? status, InventoryDbC
     }
 
     return Results.Ok(await result.OrderBy(product => product.Name).ToListAsync());
+});
+
+app.MapPost("/api/store/orders", async (CreateStoreOrder request, InventoryDbContext db) =>
+{
+    var name = request.CustomerName?.Trim();
+    var email = request.Email?.Trim();
+    var phone = request.Phone?.Trim();
+    var address = request.ShippingAddress?.Trim();
+
+    if (string.IsNullOrWhiteSpace(name) || name.Length > 160 ||
+        string.IsNullOrWhiteSpace(email) || email.Length > 160 || !new EmailAddressAttribute().IsValid(email) ||
+        string.IsNullOrWhiteSpace(phone) || phone.Length > 40 ||
+        string.IsNullOrWhiteSpace(address) || address.Length > 300)
+    {
+        return Results.BadRequest(new { message = "Completa nombre, correo válido, teléfono y dirección." });
+    }
+
+    if (request.Items is null || request.Items.Count is 0 or > 30 ||
+        request.Items.Any(item => item.ProductId <= 0 || item.Quantity is < 1 or > 100))
+    {
+        return Results.BadRequest(new { message = "El pedido debe incluir de 1 a 30 productos, con cantidades entre 1 y 100." });
+    }
+
+    var quantities = request.Items
+        .GroupBy(item => item.ProductId)
+        .ToDictionary(group => group.Key, group => group.Sum(item => item.Quantity));
+
+    if (quantities.Values.Any(quantity => quantity > 100))
+        return Results.BadRequest(new { message = "La cantidad máxima por producto es 100." });
+
+    await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+    var products = await db.InventoryProducts
+        .Where(product => quantities.Keys.Contains(product.Id))
+        .ToDictionaryAsync(product => product.Id);
+
+    if (products.Count != quantities.Count)
+        return Results.BadRequest(new { message = "Uno o más productos ya no están disponibles." });
+
+    foreach (var (productId, quantity) in quantities)
+    {
+        if (products[productId].Stock < quantity)
+            return Results.BadRequest(new { message = $"No hay existencias suficientes de {products[productId].Name}." });
+    }
+
+    var items = quantities.Select(entry =>
+    {
+        var product = products[entry.Key];
+        return new StoreOrderItem
+        {
+            ProductId = product.Id,
+            ProductName = product.Name,
+            Sku = product.Sku,
+            Quantity = entry.Value,
+            UnitPrice = product.Price
+        };
+    }).ToList();
+
+    var order = new StoreOrder
+    {
+        CustomerName = name,
+        Email = email,
+        Phone = phone,
+        ShippingAddress = address,
+        CreatedAt = DateTime.UtcNow,
+        Status = "Solicitud sin pago",
+        Total = items.Sum(item => item.UnitPrice * item.Quantity),
+        Items = items
+    };
+
+    db.StoreOrders.Add(order);
+    await db.SaveChangesAsync();
+    await transaction.CommitAsync();
+
+    return Results.Created($"/api/store/orders/{order.Id}", new
+    {
+        order.Id,
+        order.Status,
+        order.Total,
+        order.CreatedAt
+    });
 });
 
 app.MapGet("/api/crm/customers", async (string? search, string? status, InventoryDbContext db) =>
@@ -232,3 +341,37 @@ internal sealed record UpdateInventoryProduct(
     int Stock,
     int MinimumStock,
     decimal Price);
+
+internal sealed record CreateStoreOrder(
+    string? CustomerName,
+    string? Email,
+    string? Phone,
+    string? ShippingAddress,
+    List<StoreOrderLineRequest>? Items);
+
+internal sealed record StoreOrderLineRequest(int ProductId, int Quantity);
+
+public sealed class StoreOrder
+{
+    public int Id { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string ShippingAddress { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public decimal Total { get; set; }
+    public List<StoreOrderItem> Items { get; set; } = [];
+}
+
+public sealed class StoreOrderItem
+{
+    public int Id { get; set; }
+    public int OrderId { get; set; }
+    public int ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public string Sku { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+    public StoreOrder Order { get; set; } = null!;
+}

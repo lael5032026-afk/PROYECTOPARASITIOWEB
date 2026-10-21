@@ -35,6 +35,37 @@ export type InventoryProduct = {
   status: 'Óptimo' | 'Bajo' | 'Agotado'
 }
 
+export type StoreOrderRequest = {
+  customerName: string
+  email: string
+  phone: string
+  shippingAddress: string
+  items: { productId: number; quantity: number }[]
+}
+
+export type StoreOrderConfirmation = {
+  id: number
+  status: string
+  total: number
+  createdAt: string
+}
+
+export async function createStoreOrder(order: StoreOrderRequest): Promise<StoreOrderConfirmation> {
+  const response = await fetch(`${apiBaseUrl}/api/store/orders`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order),
+  })
+  if (!response.ok) {
+    const body: unknown = await response.json().catch(() => null)
+    const message = typeof body === 'object' && body !== null && 'message' in body && typeof body.message === 'string'
+      ? body.message
+      : 'No se pudo enviar el pedido'
+    throw new Error(message)
+  }
+  return response.json() as Promise<StoreOrderConfirmation>
+}
+
 export async function getCrmCustomers(search = '', status = 'Todos', signal?: AbortSignal): Promise<CrmCustomer[]> {
   const params = new URLSearchParams()
   if (search) params.set('search', search)
@@ -69,7 +100,7 @@ export type CreateInventoryProduct = {
   price: number
 }
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL ?? 'http://localhost:5080').replace(/\/+$/, '')
+const apiBaseUrl = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')
 
 export async function getDashboardSummary(signal?: AbortSignal): Promise<DashboardSummary> {
   const response = await fetch(`${apiBaseUrl}/api/dashboard/summary`, { signal })
