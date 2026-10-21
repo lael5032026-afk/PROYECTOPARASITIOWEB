@@ -1,0 +1,9 @@
+name = "lael-nexus"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-21"
+
+[[d1_databases]]
+binding = "LAEL_DB"
+database_name = "lael-nexus-store"
+database_id = "__D1_DATABASE_ID__"
+migrations_dir = "migrations"

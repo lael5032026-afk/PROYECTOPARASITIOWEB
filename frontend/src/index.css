@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Orbitron:wght@500;600;700&display=swap');
 @import 'tailwindcss';
 
 :root { font-family: 'Exo 2', sans-serif; color: #dbe8f6; background: #0a0a0a; font-synthesis: none; --blue: #007bff; --muted: #7990a8; }

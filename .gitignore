@@ -4,4 +4,6 @@
 frontend/node_modules/
 frontend/dist/
 .env
-.azure/
+frontend/wrangler.toml
+frontend/.wrangler/
+frontend/.dev.vars

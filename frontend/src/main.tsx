@@ -5,8 +5,12 @@ import App from './App'
 import Storefront from './Storefront'
 import SoftwareCatalog from './SoftwareCatalog'
 
+const publicStoreOnly = import.meta.env.VITE_PUBLIC_STORE_ONLY === 'true'
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {window.location.pathname === '/tienda' ? <Storefront /> : window.location.pathname === '/software' ? <SoftwareCatalog /> : <App />}
+    {publicStoreOnly
+      ? window.location.pathname === '/software' ? <SoftwareCatalog /> : <Storefront />
+      : window.location.pathname === '/tienda' ? <Storefront /> : window.location.pathname === '/software' ? <SoftwareCatalog /> : <App />}
   </StrictMode>,
 )
