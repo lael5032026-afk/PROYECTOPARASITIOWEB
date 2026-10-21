@@ -22,20 +22,50 @@
   </section>
 
   <section id="application" class="app hidden">
-    <aside id="sidebar" class="side"><div class="brand"><div class="shield">⬡</div><div><strong>LAEL</strong><span>NEXUS</span></div></div><div class="nav-title">PLATAFORMA</div><button class="nav active" data-view="dashboard">▦ &nbsp; Dashboard</button><button class="nav" data-view="inventory">▣ &nbsp; Inventarios</button><button class="nav">▤ &nbsp; Facturación</button><button class="nav">◉ &nbsp; Nómina</button><button class="nav">♙ &nbsp; CRM</button><button class="nav">⌘ &nbsp; Automatización</button></aside>
+    <aside id="sidebar" class="side"><div class="brand"><div class="shield">⬡</div><div><strong>LAEL</strong><span>NEXUS</span></div></div><div class="nav-title">PLATAFORMA</div><button class="nav active" data-view="dashboard">▦ &nbsp; Dashboard</button><button class="nav" data-view="inventory">▣ &nbsp; Inventarios</button><button class="nav" data-view="crm">♙ &nbsp; CRM</button><button class="nav">▤ &nbsp; Facturación</button><button class="nav">◉ &nbsp; Nómina</button><button class="nav">⌘ &nbsp; Automatización</button></aside>
     <main class="main"><header class="top"><button class="menu" id="menu">☰</button><span>Plataforma / <b id="breadcrumb">Dashboard</b></span><button class="avatar" id="logout" title="Cerrar sesión">LC</button></header><div class="content"><div id="dashboardView"><section class="welcome"><div><p class="eyebrow">MIÉRCOLES, 18 DE JUNIO DE 2025</p><h1>Buenos días, <span>Luisa</span></h1><p class="muted">Aquí tienes el pulso de tu negocio en tiempo real.</p></div><button class="primary" style="width:auto">↗ Ver reportes</button></section><section class="cards"><div class="card"><small>Ventas del mes</small><strong>$128,450</strong><small class="up">↗ +18.4%</small></div><div class="card"><small>Órdenes activas</small><strong>1,284</strong><small class="up">↗ +12.8%</small></div><div class="card"><small>Clientes activos</small><strong>3,842</strong><small class="up">↗ +8.2%</small></div><div class="card"><small>Flujos automatizados</small><strong>64</strong><small class="up">↗ +24.6%</small></div></section><section class="grid"><article class="panel"><p class="eyebrow">RENDIMIENTO</p><h2>Resumen de ventas</h2><div class="chart"><i class="bar" style="height:40%"></i><i class="bar" style="height:55%"></i><i class="bar" style="height:46%"></i><i class="bar" style="height:68%"></i><i class="bar" style="height:61%"></i><i class="bar" style="height:88%"></i></div></article><article class="panel"><p class="eyebrow">OPERACIÓN</p><h2>Actividad reciente</h2><div class="activity"><span>✓ Factura emitida</span><small>Hace 8 min</small></div><div class="activity"><span>▣ Inventario actualizado</span><small>Hace 26 min</small></div><div class="activity"><span>✦ Predicción completada</span><small>Hace 1 h</small></div><div class="activity"><span>♙ Nuevo cliente registrado</span><small>Hace 2 h</small></div></article></section><p class="footer">LAEL Nexus · Unifica. Automatiza. Evoluciona.</p></div>
 
-      <div id="inventoryView" class="hidden"><section class="inventory-head"><div><p class="eyebrow">CORE EMPRESARIAL</p><h1>Inventarios</h1><p class="muted">Controla existencias, costes y disponibilidad en tiempo real.</p></div><button class="primary" style="width:auto" id="newProduct">＋ Nuevo producto</button></section><section class="cards"><div class="card"><small>Productos registrados</small><strong id="totalProducts">0</strong></div><div class="card"><small>Unidades en stock</small><strong id="totalStock">0</strong></div><div class="card"><small>Stock bajo</small><strong id="lowStock">0</strong></div><div class="card"><small>Agotados</small><strong id="outStock">0</strong></div></section><section class="panel" style="margin-top:15px"><div class="toolbar"><input id="search" placeholder="Buscar nombre, SKU o categoría"><select id="status"><option>Todos</option><option>Óptimo</option><option>Bajo</option><option>Agotado</option></select></div><div class="table-wrap"><table><thead><tr><th>Producto</th><th>Categoría</th><th>SKU</th><th>Stock</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="productRows"></tbody></table></div></section></div></div></main>
+      <div id="inventoryView" class="hidden"><section class="inventory-head"><div><p class="eyebrow">CORE EMPRESARIAL</p><h1>Inventarios</h1><p class="muted">Controla existencias, costes y disponibilidad en tiempo real.</p></div><button class="primary" style="width:auto" id="newProduct">＋ Nuevo producto</button></section><section class="cards"><div class="card"><small>Productos registrados</small><strong id="totalProducts">0</strong></div><div class="card"><small>Unidades en stock</small><strong id="totalStock">0</strong></div><div class="card"><small>Stock bajo</small><strong id="lowStock">0</strong></div><div class="card"><small>Agotados</small><strong id="outStock">0</strong></div></section><section class="panel" style="margin-top:15px"><div class="toolbar"><input id="search" placeholder="Buscar nombre, SKU o categoría"><select id="status"><option>Todos</option><option>Óptimo</option><option>Bajo</option><option>Agotado</option></select></div><div class="table-wrap"><table><thead><tr><th>Producto</th><th>Categoría</th><th>SKU</th><th>Stock</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="productRows"></tbody></table></div></section></div>
+      <div id="crmView" class="hidden"><section class="inventory-head"><div><p class="eyebrow">CORE EMPRESARIAL</p><h1>CRM</h1><p class="muted">Gestiona clientes, contactos y oportunidades comerciales.</p></div><button class="primary" style="width:auto" id="newCustomer">＋ Nuevo cliente</button></section><section class="cards"><div class="card"><small>Clientes registrados</small><strong id="totalCustomers">0</strong></div><div class="card"><small>Clientes activos</small><strong id="activeCustomers">0</strong></div><div class="card"><small>Prospectos</small><strong id="prospectCustomers">0</strong></div><div class="card"><small>Empresas</small><strong id="companyCount">0</strong></div></section><section class="panel" style="margin-top:15px"><div class="toolbar"><input id="crmSearch" placeholder="Buscar cliente, empresa o correo"><select id="crmStatus"><option>Todos</option><option>Activo</option><option>Prospecto</option><option>Inactivo</option></select></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Empresa</th><th>Teléfono</th><th>Último contacto</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="customerRows"></tbody></table></div></section></div></div></main>
   </section>
 
   <div id="modal" class="modal hidden"><form class="modal-box" id="productForm"><div class="modal-head"><div><p class="eyebrow">INVENTARIO</p><h2 id="modalTitle">Nuevo producto</h2></div><button type="button" id="closeModal">✕</button></div><label class="form-group">Nombre<input id="productName" required></label><label class="form-group">Categoría<select id="productCategory"><option>Electrónica</option><option>Accesorios</option><option>Mobiliario</option><option>Oficina</option></select></label><label class="form-group">Stock<input id="productStock" type="number" min="0" required></label><label class="form-group">Stock mínimo<input id="productMinimum" type="number" min="0" required></label><label class="form-group">Precio<input id="productPrice" type="number" min="0" step="0.01" required></label><button class="primary" type="submit">Guardar producto</button></form></div>
+
+  <div id="customerModal" class="modal hidden">
+    <form class="modal-box" id="customerForm">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">CRM</p>
+          <h2 id="customerTitle">Nuevo cliente</h2>
+        </div>
+        <button type="button" id="closeCustomerModal">✕</button>
+      </div>
+      <label class="form-group">Nombre<input id="customerName" required></label>
+      <label class="form-group">Correo electrónico<input id="customerEmail" type="email" required></label>
+      <label class="form-group">Empresa<input id="customerCompany" required></label>
+      <label class="form-group">Teléfono<input id="customerPhone"></label>
+      <label class="form-group">Estado
+        <select id="customerStatus">
+          <option>Prospecto</option>
+          <option>Activo</option>
+          <option>Inactivo</option>
+        </select>
+      </label>
+      <label class="form-group">Notas<textarea id="customerNotes"></textarea></label>
+      <button class="primary" type="submit">Guardar cliente</button>
+    </form>
+  </div>
+
   <script>
     const API_URL = 'http://localhost:5080'
     let products = []
+    let customers = []
     let editingId = null
+    let editingCustomerId = null
 
     const $ = (id) => document.getElementById(id)
     const status = (product) => product.status
+    const customerStatus = (customer) => customer.status
 
     $('togglePassword').onclick = () => {
       const password = $('password')
@@ -57,6 +87,7 @@
       $('login').classList.add('hidden')
       $('application').classList.remove('hidden')
       await loadInventory()
+      await loadCustomers()
     }
 
     function logout() {
@@ -76,9 +107,11 @@
         nav.classList.add('active')
         $('dashboardView').classList.toggle('hidden', view !== 'dashboard')
         $('inventoryView').classList.toggle('hidden', view !== 'inventory')
-        $('breadcrumb').textContent = view === 'inventory' ? 'Inventarios' : 'Dashboard'
+        $('crmView').classList.toggle('hidden', view !== 'crm')
+        $('breadcrumb').textContent = view === 'inventory' ? 'Inventarios' : view === 'crm' ? 'CRM' : 'Dashboard'
         $('sidebar').classList.remove('open')
         if (view === 'inventory') loadInventory()
+        if (view === 'crm') loadCustomers()
       }
     })
 
@@ -110,6 +143,28 @@
           <td><span class="badge ${status(product) === 'Óptimo' ? 'ok' : status(product) === 'Bajo' ? 'low' : 'out'}">${status(product)}</span></td>
           <td class="actions"><button onclick="editProduct(${product.id})">Editar</button><button class="remove" onclick="removeProduct(${product.id})">Eliminar</button></td>
         </tr>`).join('')
+    }
+
+    async function loadCustomers() {
+      const query = new URLSearchParams()
+      if ($('crmSearch').value) query.set('search', $('crmSearch').value)
+      if ($('crmStatus').value !== 'Todos') query.set('status', $('crmStatus').value)
+      try {
+        const response = await fetch(`${API_URL}/api/crm/customers?${query}`)
+        if (!response.ok) throw new Error('No se pudieron cargar los clientes')
+        customers = await response.json()
+        renderCustomers()
+      } catch (error) {
+        $('customerRows').innerHTML = `<tr><td colspan="6" style="color:#f0808a">${error.message}</td></tr>`
+      }
+    }
+
+    function renderCustomers() {
+      $('totalCustomers').textContent = customers.length
+      $('activeCustomers').textContent = customers.filter((customer) => customer.status === 'Activo').length
+      $('prospectCustomers').textContent = customers.filter((customer) => customer.status === 'Prospecto').length
+      $('companyCount').textContent = new Set(customers.map((customer) => customer.company)).size
+      $('customerRows').innerHTML = customers.map((customer) => `<tr><td><b>${customer.name}</b><small>${customer.email}</small></td><td>${customer.company}</td><td>${customer.phone || '—'}</td><td>${new Date(customer.lastContact).toLocaleDateString('es-ES')}</td><td><span class="badge ${customerStatus(customer) === 'Activo' ? 'ok' : customerStatus(customer) === 'Prospecto' ? 'low' : 'out'}">${customerStatus(customer)}</span></td><td class="actions"><button onclick="editCustomer(${customer.id})">Editar</button><button class="remove" onclick="removeCustomer(${customer.id})">Eliminar</button></td></tr>`).join('')
     }
 
     $('search').oninput = loadInventory
@@ -155,6 +210,24 @@
       $('modal').classList.add('hidden')
       await loadInventory()
     }
+
+    async function saveCustomer(event) {
+      event.preventDefault()
+      const payload = { name: $('customerName').value, email: $('customerEmail').value, company: $('customerCompany').value, phone: $('customerPhone').value, status: $('customerStatus').value, notes: $('customerNotes').value }
+      const response = await fetch(`${API_URL}/api/crm/customers${editingCustomerId ? `/${editingCustomerId}` : ''}`, { method: editingCustomerId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      if (!response.ok) return alert('No se pudo guardar el cliente.')
+      $('customerModal').classList.add('hidden')
+      await loadCustomers()
+    }
+
+    function openCustomerModal(customer) { editingCustomerId = customer?.id || null; $('customerTitle').textContent = editingCustomerId ? 'Editar cliente' : 'Nuevo cliente'; $('customerName').value = customer?.name || ''; $('customerEmail').value = customer?.email || ''; $('customerCompany').value = customer?.company || ''; $('customerPhone').value = customer?.phone || ''; $('customerStatus').value = customer?.status || 'Prospecto'; $('customerNotes').value = customer?.notes || ''; $('customerModal').classList.remove('hidden') }
+    window.editCustomer = (id) => openCustomerModal(customers.find((customer) => customer.id === id))
+    window.removeCustomer = async (id) => { if (!confirm('¿Eliminar este cliente de SQL Server?')) return; const response = await fetch(`${API_URL}/api/crm/customers/${id}`, { method: 'DELETE' }); if (!response.ok) return alert('No se pudo eliminar el cliente.'); await loadCustomers() }
+    $('newCustomer').onclick = () => openCustomerModal()
+    $('closeCustomerModal').onclick = () => $('customerModal').classList.add('hidden')
+    $('customerForm').onsubmit = saveCustomer
+    $('crmSearch').oninput = loadCustomers
+    $('crmStatus').onchange = loadCustomers
 
     if (sessionStorage.getItem('lael-demo-auth') === 'true') showApp()
   </script>

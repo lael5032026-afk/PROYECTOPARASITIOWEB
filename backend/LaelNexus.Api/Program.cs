@@ -23,6 +23,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
     db.Database.EnsureCreated();
+    db.Database.ExecuteSqlRaw("IF OBJECT_ID(N'[CrmCustomers]', N'U') IS NULL CREATE TABLE [CrmCustomers] ([Id] int NOT NULL IDENTITY, [Name] nvarchar(160) NOT NULL, [Email] nvarchar(160) NOT NULL, [Company] nvarchar(160) NOT NULL, [Phone] nvarchar(40) NOT NULL, [Status] nvarchar(30) NOT NULL, [LastContact] datetime2 NOT NULL, [Notes] nvarchar(max) NOT NULL, CONSTRAINT [PK_CrmCustomers] PRIMARY KEY ([Id])); IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_CrmCustomers_Email') CREATE UNIQUE INDEX [IX_CrmCustomers_Email] ON [CrmCustomers] ([Email]);");
 
     if (!db.InventoryProducts.Any())
     {
@@ -32,6 +33,15 @@ using (var scope = app.Services.CreateScope())
             new InventoryProduct { Name = "Silla Ergonómica Nexus", Category = "Mobiliario", Sku = "SIL-108", Stock = 26, MinimumStock = 8, Price = 289.00m, Status = "Óptimo" },
             new InventoryProduct { Name = "Teclado Mecánico RGB", Category = "Accesorios", Sku = "TEC-220", Stock = 0, MinimumStock = 15, Price = 89.99m, Status = "Agotado" },
             new InventoryProduct { Name = "Cámara de Conferencia 4K", Category = "Electrónica", Sku = "CAM-004", Stock = 15, MinimumStock = 5, Price = 179.99m, Status = "Óptimo" });
+        db.SaveChanges();
+    }
+
+    if (!db.CrmCustomers.Any())
+    {
+        db.CrmCustomers.AddRange(
+            new CrmCustomer { Name = "María Rodríguez", Email = "maria@grupodelta.com", Company = "Grupo Delta", Phone = "+34 600 120 401", Status = "Activo", LastContact = DateTime.UtcNow.AddDays(-2), Notes = "Interesada en automatización." },
+            new CrmCustomer { Name = "Carlos Méndez", Email = "carlos@innovacionesvega.com", Company = "Innovaciones Vega S.A.", Phone = "+34 600 120 402", Status = "Prospecto", LastContact = DateTime.UtcNow.AddDays(-5), Notes = "Solicitó demostración del CRM." },
+            new CrmCustomer { Name = "Ana Torres", Email = "ana@solucionesnorte.com", Company = "Soluciones Norte", Phone = "+34 600 120 403", Status = "Activo", LastContact = DateTime.UtcNow.AddDays(-9), Notes = "Cliente desde 2024." });
         db.SaveChanges();
     }
 }
@@ -70,6 +80,47 @@ app.MapGet("/api/inventory", async (string? search, string? status, InventoryDbC
     }
 
     return Results.Ok(await result.OrderBy(product => product.Name).ToListAsync());
+});
+
+app.MapGet("/api/crm/customers", async (string? search, string? status, InventoryDbContext db) =>
+{
+    IQueryable<CrmCustomer> result = db.CrmCustomers.AsNoTracking();
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        var term = search.Trim().ToLower();
+        result = result.Where(customer => customer.Name.ToLower().Contains(term) || customer.Email.ToLower().Contains(term) || customer.Company.ToLower().Contains(term));
+    }
+    if (!string.IsNullOrWhiteSpace(status) && status != "Todos") result = result.Where(customer => customer.Status == status);
+    return Results.Ok(await result.OrderBy(customer => customer.Name).ToListAsync());
+});
+
+app.MapPost("/api/crm/customers", async (CreateCrmCustomer request, InventoryDbContext db) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Company))
+        return Results.BadRequest(new { message = "Nombre, correo y empresa son obligatorios." });
+
+    var customer = new CrmCustomer { Name = request.Name.Trim(), Email = request.Email.Trim(), Company = request.Company.Trim(), Phone = request.Phone?.Trim() ?? string.Empty, Status = request.Status, LastContact = DateTime.UtcNow, Notes = request.Notes?.Trim() ?? string.Empty };
+    db.CrmCustomers.Add(customer);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/crm/customers/{customer.Id}", customer);
+});
+
+app.MapPut("/api/crm/customers/{id:int}", async (int id, CreateCrmCustomer request, InventoryDbContext db) =>
+{
+    var customer = await db.CrmCustomers.FindAsync(id);
+    if (customer is null) return Results.NotFound();
+    customer.Name = request.Name.Trim(); customer.Email = request.Email.Trim(); customer.Company = request.Company.Trim(); customer.Phone = request.Phone?.Trim() ?? string.Empty; customer.Status = request.Status; customer.Notes = request.Notes?.Trim() ?? string.Empty;
+    await db.SaveChangesAsync();
+    return Results.Ok(customer);
+});
+
+app.MapDelete("/api/crm/customers/{id:int}", async (int id, InventoryDbContext db) =>
+{
+    var customer = await db.CrmCustomers.FindAsync(id);
+    if (customer is null) return Results.NotFound();
+    db.CrmCustomers.Remove(customer);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
 });
 
 app.MapPost("/api/inventory", async (CreateInventoryProduct request, InventoryDbContext db) =>
@@ -156,6 +207,20 @@ internal sealed record CreateInventoryProduct(
     int Stock,
     int MinimumStock,
     decimal Price);
+
+public sealed class CrmCustomer
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Company { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string Status { get; set; } = "Prospecto";
+    public DateTime LastContact { get; set; }
+    public string Notes { get; set; } = string.Empty;
+}
+
+internal sealed record CreateCrmCustomer(string Name, string Email, string Company, string? Phone, string Status, string? Notes);
 
 internal sealed record UpdateInventoryProduct(
     string Name,

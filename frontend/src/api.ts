@@ -11,6 +11,19 @@ export type DashboardSummary = {
 
 export type UpdateInventoryProduct = CreateInventoryProduct
 
+export type CrmCustomer = {
+  id: number
+  name: string
+  email: string
+  company: string
+  phone: string
+  status: 'Activo' | 'Prospecto' | 'Inactivo'
+  lastContact: string
+  notes: string
+}
+
+export type CreateCrmCustomer = Omit<CrmCustomer, 'id' | 'lastContact'>
+
 export type InventoryProduct = {
   id: number
   name: string
@@ -20,6 +33,32 @@ export type InventoryProduct = {
   minimumStock: number
   price: number
   status: 'Óptimo' | 'Bajo' | 'Agotado'
+}
+
+export async function getCrmCustomers(search = '', status = 'Todos', signal?: AbortSignal): Promise<CrmCustomer[]> {
+  const params = new URLSearchParams()
+  if (search) params.set('search', search)
+  if (status !== 'Todos') params.set('status', status)
+  const response = await fetch(`${apiBaseUrl}/api/crm/customers?${params}`, { signal })
+  if (!response.ok) throw new Error('No se pudieron cargar los clientes')
+  return response.json() as Promise<CrmCustomer[]>
+}
+
+export async function createCrmCustomer(customer: CreateCrmCustomer): Promise<CrmCustomer> {
+  const response = await fetch(`${apiBaseUrl}/api/crm/customers`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(customer) })
+  if (!response.ok) throw new Error('No se pudo crear el cliente')
+  return response.json() as Promise<CrmCustomer>
+}
+
+export async function updateCrmCustomer(id: number, customer: CreateCrmCustomer): Promise<CrmCustomer> {
+  const response = await fetch(`${apiBaseUrl}/api/crm/customers/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(customer) })
+  if (!response.ok) throw new Error('No se pudo actualizar el cliente')
+  return response.json() as Promise<CrmCustomer>
+}
+
+export async function deleteCrmCustomer(id: number): Promise<void> {
+  const response = await fetch(`${apiBaseUrl}/api/crm/customers/${id}`, { method: 'DELETE' })
+  if (!response.ok) throw new Error('No se pudo eliminar el cliente')
 }
 
 export type CreateInventoryProduct = {
