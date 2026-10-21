@@ -36,6 +36,21 @@ dotnet run --project backend/LaelNexus.Api
 
 La API estará disponible en `http://localhost:5080` y el frontend en la URL mostrada por Vite.
 
+Para probarlo visualmente abre `http://localhost:5173/`. En el menú lateral selecciona **Inventarios** y prueba buscar, filtrar, crear, editar y eliminar productos.
+
+## Acceso de demostración
+
+La aplicación muestra primero la pantalla de login:
+
+- Correo: `admin@laelnexus.com`
+- Contraseña: `LAEL2026`
+
+La sesión se conserva en el navegador durante la demostración. Para cerrar sesión, pulsa el avatar `LC` situado en la esquina superior derecha.
+
+Este acceso es provisional y solo sirve para visualizar el proyecto. La autenticación real con OAuth2/JWT, MFA y roles se añadirá antes de producción.
+
+En Windows con SQL Express instalado, la API utiliza la instancia local `.\SQLEXPRESS`. En Docker Compose se utiliza automáticamente el SQL Server del servicio `sqlserver`.
+
 ## Endpoints iniciales
 
 - `GET /api/health`: estado operativo de la API.

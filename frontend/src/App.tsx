@@ -17,6 +17,8 @@ import {
   Settings2,
   ShieldCheck,
   Sparkles,
+  Eye,
+  EyeOff,
   UsersRound,
   X,
 } from 'lucide-react'
@@ -50,6 +52,11 @@ const metricDefinitions = [
 ]
 
 function App() {
+  const [authenticated, setAuthenticated] = useState(() => localStorage.getItem('lael-authenticated') === 'true')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loginError, setLoginError] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeModule, setActiveModule] = useState('Dashboard')
   const [summary, setSummary] = useState(fallbackSummary)
@@ -61,6 +68,27 @@ function App() {
   const [editingProduct, setEditingProduct] = useState<InventoryProduct | null>(null)
   const [productForm, setProductForm] = useState({ name: '', category: 'Electrónica', stock: 0, minimumStock: 5, price: 0 })
   const [inventoryError, setInventoryError] = useState('')
+
+  function handleLogin(event: React.FormEvent) {
+    event.preventDefault()
+    if (email.trim().toLowerCase() !== 'admin@laelnexus.com' || password !== 'LAEL2026') {
+      setLoginError('Correo o contraseña incorrectos.')
+      return
+    }
+
+    localStorage.setItem('lael-authenticated', 'true')
+    setAuthenticated(true)
+    setLoginError('')
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('lael-authenticated')
+    setAuthenticated(false)
+  }
+
+  if (!authenticated) {
+    return <LoginScreen email={email} password={password} showPassword={showPassword} error={loginError} onEmailChange={setEmail} onPasswordChange={setPassword} onTogglePassword={() => setShowPassword((value) => !value)} onSubmit={handleLogin} />
+  }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -149,7 +177,7 @@ function App() {
         <header className="topbar">
           <button className="mobile-menu" onClick={() => setMenuOpen(true)}><Menu size={22} /></button>
           <div className="breadcrumbs"><span>Plataforma</span><ChevronRight size={14} /><strong>{activeModule}</strong></div>
-          <div className="topbar-actions"><button className="icon-button"><Search size={19} /></button><button className="icon-button notification"><Bell size={19} /><i /></button><div className="user-avatar">LC</div></div>
+          <div className="topbar-actions"><button className="icon-button"><Search size={19} /></button><button className="icon-button notification"><Bell size={19} /><i /></button><button className="user-avatar" onClick={handleLogout} title="Cerrar sesión">LC</button></div>
         </header>
         <div className="content-container">
           {activeModule === 'Inventarios' ? <InventoryView products={products} search={inventorySearch} status={inventoryStatus} onSearch={setInventorySearch} onStatus={setInventoryStatus} showForm={showProductForm} onShowForm={(value) => { setShowProductForm(value); if (!value) setEditingProduct(null) }} form={productForm} onFormChange={setProductForm} onSubmit={handleCreateProduct} onEdit={editProduct} onDelete={removeProduct} editing={Boolean(editingProduct)} error={inventoryError} /> : <>
@@ -162,6 +190,10 @@ function App() {
       </main>
     </div>
   )
+}
+
+function LoginScreen({ email, password, showPassword, error, onEmailChange, onPasswordChange, onTogglePassword, onSubmit }: { email: string; password: string; showPassword: boolean; error: string; onEmailChange: (value: string) => void; onPasswordChange: (value: string) => void; onTogglePassword: () => void; onSubmit: (event: React.FormEvent) => void }) {
+  return <main className="login-screen"><div className="login-glow login-glow-one" /><div className="login-glow login-glow-two" /><section className="login-card"><div className="login-brand"><div className="brand-mark"><ShieldCheck size={25} /></div><div><strong>LAEL</strong><span>NEXUS</span></div></div><div className="login-heading"><p className="eyebrow">PLATAFORMA EMPRESARIAL</p><h1>Bienvenido de nuevo</h1><p>Accede a tu centro de operaciones inteligente.</p></div><form className="login-form" onSubmit={onSubmit}><label>Correo electrónico<div className="login-input"><UsersRound size={17} /><input type="email" required value={email} onChange={(event) => onEmailChange(event.target.value)} placeholder="tu@empresa.com" /></div></label><label>Contraseña<div className="login-input"><ShieldCheck size={17} /><input type={showPassword ? 'text' : 'password'} required value={password} onChange={(event) => onPasswordChange(event.target.value)} placeholder="••••••••" /><button type="button" onClick={onTogglePassword}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button></div></label>{error && <p className="login-error">{error}</p>}<button className="login-submit" type="submit">Iniciar sesión <ArrowUpRight size={17} /></button></form><div className="demo-credentials"><Sparkles size={15} /><span>Demo: <b>admin@laelnexus.com</b> · <b>LAEL2026</b></span></div><p className="login-footer">Unifica. Automatiza. Evoluciona.</p></section></main>
 }
 
 function InventoryView({ products, search, status, onSearch, onStatus, showForm, onShowForm, form, onFormChange, onSubmit, onEdit, onDelete, editing, error }: { products: InventoryProduct[]; search: string; status: string; onSearch: (value: string) => void; onStatus: (value: string) => void; showForm: boolean; onShowForm: (value: boolean) => void; form: { name: string; category: string; stock: number; minimumStock: number; price: number }; onFormChange: (value: { name: string; category: string; stock: number; minimumStock: number; price: number }) => void; onSubmit: (event: React.FormEvent) => void; onEdit: (product: InventoryProduct) => void; onDelete: (product: InventoryProduct) => void; editing: boolean; error: string }) {
