@@ -87,3 +87,52 @@ a.nav-item { text-decoration:none; }
 @media(max-width:860px) { .store-layout { grid-template-columns:minmax(0,1fr) 285px; gap:15px; }.store-product-grid { gap:10px; }.store-product-visual { height:135px; } }
 @media(max-width:680px) { .store-hero { padding:56px 20px 46px; }.store-layout { grid-template-columns:1fr; width:min(560px,92%); }.store-cart { position:static; grid-row:1; }.store-product-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.store-footer { flex-direction:column; }.store-section-heading h2 { font-size:17px; } }
 @media(max-width:420px) { .store-product-grid { grid-template-columns:1fr; }.store-product-visual { height:170px; }.store-filters { flex-direction:column; }.store-filters select { width:100%; }.store-header { padding:0 17px; }.store-cart { padding:15px; } }
+.store-header-nav { display:flex; align-items:center; gap:20px; }
+.store-header-nav>a:not(.store-cart-link) { color:#a5bdd0; font-size:11px; text-decoration:none; }
+.store-header-nav>a[aria-current="page"] { color:#a9d9ff; }
+.software-hero { padding:76px 24px 42px; text-align:center; }
+.software-hero h1 { margin:17px 0 14px; font-family:Orbitron,sans-serif; font-size:clamp(31px,5vw,53px); line-height:1.2; letter-spacing:-1.7px; }
+.software-hero h1 span { color:var(--store-blue); }
+.software-hero>p:not(.store-eyebrow) { max-width:560px; margin:0 auto; color:#9aafc1; font-size:14px; line-height:1.7; }
+.software-period-switch { display:inline-flex; gap:4px; margin-top:24px; padding:4px; border:1px solid #294359; border-radius:8px; background:#0c151e; }
+.software-period-switch button { min-width:105px; padding:9px 14px; color:#91a9bc; border:0; border-radius:5px; background:transparent; font-size:11px; cursor:pointer; }
+.software-period-switch button.selected { color:#e8f5ff; background:#10416a; box-shadow:0 0 0 1px #28658f; }
+.software-content { display:grid; grid-template-columns:minmax(0,440px) minmax(0,410px); justify-content:center; align-items:center; gap:66px; width:min(1050px,92%); margin:15px auto 65px; }
+.software-plan-card { padding:26px; border:1px solid #2d5573; border-radius:12px; background:linear-gradient(145deg,#132434,#0c151e); box-shadow:0 20px 60px #0005,0 0 35px #007bff0c; }
+.software-plan-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:23px; }
+.software-plan-icon { display:grid; place-items:center; width:44px; height:44px; color:#92cfff; border:1px solid #27557a; border-radius:9px; background:#103653; }
+.software-available { padding:5px 9px; color:#6fdbac; border:1px solid #285641; border-radius:20px; background:#10281d; font-size:10px; }
+.software-plan-card>.store-eyebrow { margin:0; }
+.software-plan-card h2 { margin:8px 0; font:500 24px Orbitron,sans-serif; }
+.software-plan-description { min-height:56px; margin:0; color:#91a7ba; font-size:12px; line-height:1.65; }
+.software-price { display:grid; gap:5px; margin:19px 0 14px; padding:14px 0; border-top:1px solid #ffffff17; border-bottom:1px solid #ffffff17; }
+.software-price strong { color:#dceeff; font:500 18px Orbitron,sans-serif; }
+.software-price span { color:#829bb0; font-size:10px; }
+.software-features { display:grid; gap:12px; margin:18px 0 20px; padding:0; list-style:none; }
+.software-features li { display:flex; align-items:center; gap:9px; color:#b4c6d5; font-size:11px; }
+.software-features svg { flex-shrink:0; color:#60d6a2; }
+.software-request-button { width:100%; }
+.software-payment-note { display:block; margin-top:11px; color:#71889d; font-size:10px; text-align:center; }
+.software-side-copy h2 { max-width:390px; margin:12px 0; color:#dceafa; font:500 25px/1.35 Orbitron,sans-serif; }
+.software-side-copy>p:not(.store-eyebrow) { color:#8ea4b7; font-size:12px; line-height:1.7; }
+.software-promise { display:flex; gap:11px; margin-top:20px; color:#83bce6; }
+.software-promise span { display:grid; gap:4px; }
+.software-promise strong { color:#c5d8e7; font-size:11px; font-weight:500; }
+.software-promise small { color:#758da2; font-size:10px; line-height:1.5; }
+.software-future { display:flex; gap:9px; align-items:start; margin-top:24px; padding:12px; color:#a8c5dc; border:1px solid #244159; border-radius:7px; background:#10202d; font-size:10px; line-height:1.6; }
+.software-future svg { flex-shrink:0; color:#8bc9ff; }
+.software-request-section { display:grid; grid-template-columns:minmax(0,340px) minmax(0,470px); justify-content:center; align-items:start; gap:55px; width:min(1000px,92%); margin:0 auto 60px; padding:35px; border:1px solid #20394e; border-radius:11px; background:linear-gradient(140deg,#101c27,#0b131a); }
+.software-request-section h2 { margin:9px 0; color:#dfedf8; font:500 20px Orbitron,sans-serif; }
+.software-request-section>div>p:not(.store-eyebrow) { color:#849caf; font-size:11px; line-height:1.7; }
+.software-request-form { display:grid; gap:12px; }
+.software-request-form label { display:grid; gap:6px; color:#a6b9c8; font-size:11px; }
+.software-request-form input { width:100%; padding:10px; color:#e4eef6; border:1px solid #2b455b; border-radius:5px; outline:0; background:#0b141c; font-size:12px; }
+.software-request-form input:focus { border-color:#1687ff; box-shadow:0 0 0 3px #007bff1c; }
+.software-privacy-note { margin:0; color:#71889d; font-size:10px; line-height:1.5; }
+.software-success { display:flex; gap:8px; align-items:start; margin:0; padding:11px; color:#90e1b9; border:1px solid #265840; border-radius:6px; background:#10291f; font-size:11px; line-height:1.5; }
+.software-success svg { flex-shrink:0; }
+.software-request-form .store-checkout-button { width:100%; }
+.software-storefront .store-footer { align-items:center; }
+.software-storefront .store-back-link { margin:0; padding:0; border:0; }
+@media(max-width:760px) { .software-content { grid-template-columns:minmax(0,500px); gap:32px; width:min(560px,92%); }.software-plan-card { order:0; }.software-side-copy { order:1; }.software-request-section { grid-template-columns:1fr; gap:22px; padding:23px; } }
+@media(max-width:480px) { .store-header-nav { gap:12px; }.store-header-nav>a:not(.store-cart-link) { font-size:10px; }.software-hero { padding:55px 18px 36px; }.software-hero h1 { font-size:29px; }.software-plan-card { padding:20px; }.software-request-section { width:92%; padding:18px; }.software-side-copy h2 { font-size:21px; } }

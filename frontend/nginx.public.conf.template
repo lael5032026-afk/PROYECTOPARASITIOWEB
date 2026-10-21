@@ -1,0 +1,73 @@
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+
+    location = / {
+        return 302 /tienda;
+    }
+
+    location = /api/health {
+        limit_except GET { deny all; }
+        proxy_pass http://${API_HOST};
+    }
+
+    location = /api/inventory {
+        limit_except GET { deny all; }
+        proxy_pass http://${API_HOST};
+    }
+
+    location = /api/store/orders {
+        limit_except POST { deny all; }
+        proxy_pass http://${API_HOST};
+    }
+
+    location = /api/store/software-requests {
+        limit_except POST { deny all; }
+        proxy_pass http://${API_HOST};
+    }
+
+    location /api/ {
+        return 404;
+    }
+
+    location = /tienda {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location = /software {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location = /index.html {
+        internal;
+    }
+
+    location /assets/ {
+        try_files $uri =404;
+    }
+
+    location = /favicon.svg {
+        try_files $uri =404;
+    }
+
+    location = /manifest.webmanifest {
+        try_files $uri =404;
+    }
+
+    location = /sw.js {
+        try_files $uri =404;
+    }
+
+    location = /registerSW.js {
+        try_files $uri =404;
+    }
+
+    location ~ ^/workbox-[A-Za-z0-9_-]+\.js$ {
+        try_files $uri =404;
+    }
+
+    location / {
+        return 404;
+    }
+}

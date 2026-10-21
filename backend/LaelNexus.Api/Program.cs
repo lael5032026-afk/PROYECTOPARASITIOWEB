@@ -55,6 +55,21 @@ using (var scope = app.Services.CreateScope())
                     FOREIGN KEY ([OrderId]) REFERENCES [StoreOrders] ([Id]) ON DELETE CASCADE
             );
         """);
+    db.Database.ExecuteSqlRaw("""
+        IF OBJECT_ID(N'[SoftwarePlanRequests]', N'U') IS NULL
+            CREATE TABLE [SoftwarePlanRequests] (
+                [Id] int NOT NULL IDENTITY,
+                [SoftwareCode] nvarchar(60) NOT NULL,
+                [SoftwareName] nvarchar(160) NOT NULL,
+                [CustomerName] nvarchar(160) NOT NULL,
+                [Email] nvarchar(160) NOT NULL,
+                [Company] nvarchar(160) NOT NULL,
+                [PlanPeriod] nvarchar(20) NOT NULL,
+                [CreatedAt] datetime2 NOT NULL,
+                [Status] nvarchar(40) NOT NULL,
+                CONSTRAINT [PK_SoftwarePlanRequests] PRIMARY KEY ([Id])
+            );
+        """);
 
     if (!db.InventoryProducts.Any())
     {
@@ -190,6 +205,48 @@ app.MapPost("/api/store/orders", async (CreateStoreOrder request, InventoryDbCon
         order.Status,
         order.Total,
         order.CreatedAt
+    });
+});
+
+app.MapPost("/api/store/software-requests", async (CreateSoftwarePlanRequest request, InventoryDbContext db) =>
+{
+    var customerName = request.CustomerName?.Trim();
+    var email = request.Email?.Trim();
+    var company = request.Company?.Trim();
+
+    if (!string.Equals(request.SoftwareCode, "lael-nexus", StringComparison.Ordinal))
+        return Results.BadRequest(new { message = "Ese software todavía no está disponible para solicitar." });
+
+    if (string.IsNullOrWhiteSpace(customerName) || customerName.Length > 160 ||
+        string.IsNullOrWhiteSpace(email) || email.Length > 160 || !new EmailAddressAttribute().IsValid(email) ||
+        string.IsNullOrWhiteSpace(company) || company.Length > 160)
+        return Results.BadRequest(new { message = "Completa nombre, correo válido y empresa." });
+
+    var planPeriod = request.PlanPeriod?.Trim().ToLowerInvariant();
+    if (planPeriod is not ("mensual" or "anual"))
+        return Results.BadRequest(new { message = "Selecciona un plan mensual o anual." });
+
+    var planRequest = new SoftwarePlanRequest
+    {
+        SoftwareCode = "lael-nexus",
+        SoftwareName = "LAEL Nexus",
+        CustomerName = customerName,
+        Email = email,
+        Company = company,
+        PlanPeriod = planPeriod,
+        CreatedAt = DateTime.UtcNow,
+        Status = "Pendiente de cotización"
+    };
+
+    db.SoftwarePlanRequests.Add(planRequest);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/store/software-requests/{planRequest.Id}", new
+    {
+        planRequest.Id,
+        planRequest.SoftwareName,
+        planRequest.PlanPeriod,
+        planRequest.Status,
+        planRequest.CreatedAt
     });
 });
 
@@ -350,6 +407,26 @@ internal sealed record CreateStoreOrder(
     List<StoreOrderLineRequest>? Items);
 
 internal sealed record StoreOrderLineRequest(int ProductId, int Quantity);
+
+internal sealed record CreateSoftwarePlanRequest(
+    string? SoftwareCode,
+    string? CustomerName,
+    string? Email,
+    string? Company,
+    string? PlanPeriod);
+
+public sealed class SoftwarePlanRequest
+{
+    public int Id { get; set; }
+    public string SoftwareCode { get; set; } = string.Empty;
+    public string SoftwareName { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Company { get; set; } = string.Empty;
+    public string PlanPeriod { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public string Status { get; set; } = string.Empty;
+}
 
 public sealed class StoreOrder
 {

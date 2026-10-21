@@ -6,6 +6,7 @@ public sealed class InventoryDbContext(DbContextOptions<InventoryDbContext> opti
     public DbSet<CrmCustomer> CrmCustomers => Set<CrmCustomer>();
     public DbSet<StoreOrder> StoreOrders => Set<StoreOrder>();
     public DbSet<StoreOrderItem> StoreOrderItems => Set<StoreOrderItem>();
+    public DbSet<SoftwarePlanRequest> SoftwarePlanRequests => Set<SoftwarePlanRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -52,6 +53,18 @@ public sealed class InventoryDbContext(DbContextOptions<InventoryDbContext> opti
             entity.Property(item => item.ProductName).HasMaxLength(160).IsRequired();
             entity.Property(item => item.Sku).HasMaxLength(40).IsRequired();
             entity.Property(item => item.UnitPrice).HasPrecision(18, 2);
+        });
+
+        modelBuilder.Entity<SoftwarePlanRequest>(entity =>
+        {
+            entity.HasKey(request => request.Id);
+            entity.Property(request => request.SoftwareCode).HasMaxLength(60).IsRequired();
+            entity.Property(request => request.SoftwareName).HasMaxLength(160).IsRequired();
+            entity.Property(request => request.CustomerName).HasMaxLength(160).IsRequired();
+            entity.Property(request => request.Email).HasMaxLength(160).IsRequired();
+            entity.Property(request => request.Company).HasMaxLength(160).IsRequired();
+            entity.Property(request => request.PlanPeriod).HasMaxLength(20).IsRequired();
+            entity.Property(request => request.Status).HasMaxLength(40).IsRequired();
         });
     }
 }

@@ -29,8 +29,12 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        PUBLIC_STORE_ONLY: "false"
     ports:
       - "127.0.0.1:8080:80"
+    environment:
+      API_HOST: "api:8080"
     depends_on:
       - api
 

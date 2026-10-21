@@ -50,6 +50,38 @@ export type StoreOrderConfirmation = {
   createdAt: string
 }
 
+export type SoftwarePlanRequest = {
+  softwareCode: string
+  customerName: string
+  email: string
+  company: string
+  planPeriod: 'mensual' | 'anual'
+}
+
+export type SoftwarePlanRequestConfirmation = {
+  id: number
+  softwareName: string
+  planPeriod: string
+  status: string
+  createdAt: string
+}
+
+export async function createSoftwarePlanRequest(request: SoftwarePlanRequest): Promise<SoftwarePlanRequestConfirmation> {
+  const response = await fetch(`${apiBaseUrl}/api/store/software-requests`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  })
+  if (!response.ok) {
+    const body: unknown = await response.json().catch(() => null)
+    const message = typeof body === 'object' && body !== null && 'message' in body && typeof body.message === 'string'
+      ? body.message
+      : 'No se pudo enviar la solicitud del plan'
+    throw new Error(message)
+  }
+  return response.json() as Promise<SoftwarePlanRequestConfirmation>
+}
+
 export async function createStoreOrder(order: StoreOrderRequest): Promise<StoreOrderConfirmation> {
   const response = await fetch(`${apiBaseUrl}/api/store/orders`, {
     method: 'POST',

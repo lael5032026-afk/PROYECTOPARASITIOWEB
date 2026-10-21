@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Minus, PackageCheck, Plus, Search, ShoppingBag, Trash2 } from 'lucide-react'
+import { Minus, PackageCheck, Plus, Search, ShoppingBag, Trash2 } from 'lucide-react'
 import { createStoreOrder, getInventory, type InventoryProduct, type StoreOrderConfirmation } from './api'
 import './storefront.css'
 
@@ -93,7 +93,7 @@ function Storefront() {
           <span className="store-brand-mark"><ShoppingBag size={21} /></span>
           <span><strong>LAEL</strong><small>TIENDA</small></span>
         </a>
-        <a className="store-cart-link" href="#carrito"><ShoppingBag size={18} /><span>Carrito</span><b>{itemCount}</b></a>
+        <nav className="store-header-nav"><a href="/tienda">Productos</a><a href="/software">Software y planes</a><a className="store-cart-link" href="#carrito"><ShoppingBag size={18} /><span>Carrito</span><b>{itemCount}</b></a></nav>
       </header>
 
       <section className="store-hero">
@@ -150,7 +150,6 @@ function Storefront() {
             ))}
           </div>
           {cart.length > 0 && <div className="store-cart-total"><span>Subtotal estimado</span><strong>${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong><small>El total final se confirma con el equipo. Esta demo no procesa pagos.</small><button type="button" className="store-checkout-button" onClick={() => { setOrderError(''); setCheckoutOpen(true) }}>Enviar solicitud</button></div>}
-          <a className="store-back-link" href="/"><ArrowLeft size={15} /> Volver al panel LAEL</a>
         </aside>
       </div>
 

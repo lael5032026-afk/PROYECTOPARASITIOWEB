@@ -223,6 +223,7 @@ function App() {
             </button>
           ))}
           <a className="nav-item" href="/tienda"><ShoppingBag size={18} /><span>Tienda pública</span><ArrowUpRight size={14} /></a>
+          <a className="nav-item" href="/software"><Sparkles size={18} /><span>Planes de software</span><ArrowUpRight size={14} /></a>
           <div className="nav-caption nav-caption-spaced">SISTEMA</div>
           <button className="nav-item" disabled title="Integración backend pendiente"><Settings2 size={18} /><span>Configuración</span><span className="nav-badge">Próximamente</span></button>
         </nav>
