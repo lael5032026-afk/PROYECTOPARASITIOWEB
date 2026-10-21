@@ -1,0 +1,32 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "LaelNexus_dev_2026!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - lael-sqlserver-data:/var/opt/mssql
+
+  api:
+    build:
+      context: ./backend/LaelNexus.Api
+    ports:
+      - "5080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__LaelNexus: "Server=sqlserver,1433;Database=LaelNexus;User Id=sa;Password=LaelNexus_dev_2026!;TrustServerCertificate=True;"
+    depends_on:
+      - sqlserver
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  lael-sqlserver-data:
