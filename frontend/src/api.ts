@@ -69,7 +69,7 @@ export type CreateInventoryProduct = {
   price: number
 }
 
-const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:5080'
+const apiBaseUrl = (import.meta.env.VITE_API_URL ?? 'http://localhost:5080').replace(/\/+$/, '')
 
 export async function getDashboardSummary(signal?: AbortSignal): Promise<DashboardSummary> {
   const response = await fetch(`${apiBaseUrl}/api/dashboard/summary`, { signal })

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var frontendOrigins = builder.Configuration.GetSection("Cors:FrontendOrigins").Get<string[]>()
+    ?? ["http://localhost:5173", "http://localhost:5174", "http://localhost:4173", "http://localhost:8080"];
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<InventoryDbContext>(options =>
@@ -9,7 +11,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+        policy.WithOrigins(frontendOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -109,6 +111,8 @@ app.MapPut("/api/crm/customers/{id:int}", async (int id, CreateCrmCustomer reque
 {
     var customer = await db.CrmCustomers.FindAsync(id);
     if (customer is null) return Results.NotFound();
+    if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Company))
+        return Results.BadRequest(new { message = "Nombre, correo y empresa son obligatorios." });
     customer.Name = request.Name.Trim(); customer.Email = request.Email.Trim(); customer.Company = request.Company.Trim(); customer.Phone = request.Phone?.Trim() ?? string.Empty; customer.Status = request.Status; customer.Notes = request.Notes?.Trim() ?? string.Empty;
     await db.SaveChangesAsync();
     return Results.Ok(customer);
@@ -125,9 +129,9 @@ app.MapDelete("/api/crm/customers/{id:int}", async (int id, InventoryDbContext d
 
 app.MapPost("/api/inventory", async (CreateInventoryProduct request, InventoryDbContext db) =>
 {
-    if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Category) || request.Stock < 0 || request.Price < 0)
+    if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Category) || request.Stock < 0 || request.MinimumStock < 0 || request.Price < 0)
     {
-        return Results.BadRequest(new { message = "Nombre, categoría, stock y precio son obligatorios y deben ser válidos." });
+        return Results.BadRequest(new { message = "Nombre, categoría, stock, stock mínimo y precio deben ser válidos." });
     }
 
     var product = new InventoryProduct

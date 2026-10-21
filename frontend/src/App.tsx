@@ -25,12 +25,12 @@ import {
 import { createCrmCustomer, createInventoryProduct, deleteCrmCustomer, deleteInventoryProduct, getCrmCustomers, getDashboardSummary, getInventory, updateCrmCustomer, updateInventoryProduct, type CrmCustomer, type DashboardSummary, type InventoryProduct } from './api'
 
 const modules = [
-  { name: 'Dashboard', icon: LayoutDashboard, active: true },
-  { name: 'Inventarios', icon: Boxes },
-  { name: 'Facturación', icon: FileText },
-  { name: 'Nómina', icon: CircleDollarSign },
-  { name: 'CRM', icon: UsersRound },
-  { name: 'Automatización', icon: Network },
+  { name: 'Dashboard', icon: LayoutDashboard, active: true, enabled: true },
+  { name: 'Inventarios', icon: Boxes, enabled: true },
+  { name: 'Facturación', icon: FileText, enabled: false },
+  { name: 'Nómina', icon: CircleDollarSign, enabled: false },
+  { name: 'CRM', icon: UsersRound, enabled: true },
+  { name: 'Automatización', icon: Network, enabled: false },
 ]
 
 const fallbackSummary: DashboardSummary = {
@@ -71,6 +71,7 @@ function App() {
   const [customers, setCustomers] = useState<CrmCustomer[]>([])
   const [crmSearch, setCrmSearch] = useState('')
   const [crmStatus, setCrmStatus] = useState('Todos')
+  const [crmError, setCrmError] = useState('')
   const [showCustomerForm, setShowCustomerForm] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<CrmCustomer | null>(null)
   const [customerForm, setCustomerForm] = useState({ name: '', email: '', company: '', phone: '', status: 'Prospecto' as CrmCustomer['status'], notes: '' })
@@ -92,11 +93,8 @@ function App() {
     setAuthenticated(false)
   }
 
-  if (!authenticated) {
-    return <LoginScreen email={email} password={password} showPassword={showPassword} error={loginError} onEmailChange={setEmail} onPasswordChange={setPassword} onTogglePassword={() => setShowPassword((value) => !value)} onSubmit={handleLogin} />
-  }
-
   useEffect(() => {
+    if (!authenticated) return
     const controller = new AbortController()
 
     getDashboardSummary(controller.signal)
@@ -111,53 +109,83 @@ function App() {
       })
 
     return () => controller.abort()
-  }, [])
+  }, [authenticated])
 
   useEffect(() => {
-    if (activeModule !== 'Inventarios') return
+    if (!authenticated || activeModule !== 'Inventarios') return
     const controller = new AbortController()
+    setInventoryError('')
     getInventory(inventorySearch, inventoryStatus, controller.signal)
       .then(setProducts)
       .catch((error: Error) => {
-        if (error.name !== 'AbortError') setInventoryError('No se pudo cargar el inventario.')
+        if (error.name !== 'AbortError') {
+          setProducts([])
+          setInventoryError('No se pudo cargar el inventario.')
+        }
       })
     return () => controller.abort()
-  }, [activeModule, inventorySearch, inventoryStatus])
+  }, [authenticated, activeModule, inventorySearch, inventoryStatus])
 
   useEffect(() => {
-    if (activeModule !== 'CRM') return
+    if (!authenticated || activeModule !== 'CRM') return
     const controller = new AbortController()
-    getCrmCustomers(crmSearch, crmStatus, controller.signal).then(setCustomers).catch(() => setInventoryError('No se pudieron cargar los clientes.'))
+    setCrmError('')
+    getCrmCustomers(crmSearch, crmStatus, controller.signal)
+      .then(setCustomers)
+      .catch((error: Error) => {
+        if (error.name !== 'AbortError') {
+          setCustomers([])
+          setCrmError('No se pudieron cargar los clientes. Comprueba la conexión con la API.')
+        }
+      })
     return () => controller.abort()
-  }, [activeModule, crmSearch, crmStatus])
+  }, [authenticated, activeModule, crmSearch, crmStatus])
+
+  if (!authenticated) {
+    return <LoginScreen email={email} password={password} showPassword={showPassword} error={loginError} onEmailChange={setEmail} onPasswordChange={setPassword} onTogglePassword={() => setShowPassword((value) => !value)} onSubmit={handleLogin} />
+  }
 
   async function handleCreateProduct(event: React.FormEvent) {
     event.preventDefault()
     setInventoryError('')
     try {
-      const product = editingProduct
-        ? await updateInventoryProduct(editingProduct.id, productForm)
-        : await createInventoryProduct(productForm)
-      setProducts((current) => editingProduct ? current.map((item) => item.id === product.id ? product : item) : [...current, product])
+      if (editingProduct) await updateInventoryProduct(editingProduct.id, productForm)
+      else await createInventoryProduct(productForm)
+      setProducts(await getInventory(inventorySearch, inventoryStatus))
       setProductForm({ name: '', category: 'Electrónica', stock: 0, minimumStock: 5, price: 0 })
       setEditingProduct(null)
       setShowProductForm(false)
     } catch {
       setInventoryError('No se pudo registrar el producto.')
     }
+  }
 
   async function saveCustomer(event: React.FormEvent) {
     event.preventDefault()
+    setCrmError('')
     try {
-      const customer = editingCustomer ? await updateCrmCustomer(editingCustomer.id, customerForm) : await createCrmCustomer(customerForm)
-      setCustomers((current) => editingCustomer ? current.map((item) => item.id === customer.id ? customer : item) : [...current, customer])
-      setShowCustomerForm(false); setEditingCustomer(null)
+      if (editingCustomer) await updateCrmCustomer(editingCustomer.id, customerForm)
+      else await createCrmCustomer(customerForm)
+      setCustomers(await getCrmCustomers(crmSearch, crmStatus))
+      setShowCustomerForm(false)
+      setEditingCustomer(null)
       setCustomerForm({ name: '', email: '', company: '', phone: '', status: 'Prospecto', notes: '' })
-    } catch { setInventoryError('No se pudo guardar el cliente.') }
+    } catch {
+      setCrmError('No se pudo guardar el cliente. Comprueba los datos y la conexión con la API.')
+    }
   }
 
   function editCustomer(customer: CrmCustomer) { setEditingCustomer(customer); setCustomerForm({ name: customer.name, email: customer.email, company: customer.company, phone: customer.phone, status: customer.status, notes: customer.notes }); setShowCustomerForm(true) }
-  async function removeCustomer(customer: CrmCustomer) { if (!window.confirm(`¿Eliminar ${customer.name}?`)) return; await deleteCrmCustomer(customer.id); setCustomers((current) => current.filter((item) => item.id !== customer.id)) }
+
+  async function removeCustomer(customer: CrmCustomer) {
+    if (!window.confirm(`¿Eliminar ${customer.name}?`)) return
+    setCrmError('')
+    try {
+      await deleteCrmCustomer(customer.id)
+      setCustomers((current) => current.filter((item) => item.id !== customer.id))
+    } catch {
+      setCrmError('No se pudo eliminar el cliente. Comprueba la conexión con la API.')
+    }
   }
 
   function editProduct(product: InventoryProduct) {
@@ -188,15 +216,15 @@ function App() {
         <div className="workspace-switcher"><span className="status-dot" /> LAEL Corporation <ChevronRight size={15} /></div>
         <nav className="navigation">
           <div className="nav-caption">PLATAFORMA</div>
-          {modules.map(({ name, icon: Icon, active }) => (
-            <button key={name} className={`nav-item ${(activeModule === name || (active && activeModule === 'Dashboard')) ? 'selected' : ''}`} onClick={() => { setActiveModule(name); setMenuOpen(false) }}>
-              <Icon size={18} /><span>{name}</span>{name === 'Automatización' && <span className="nav-badge">4</span>}
+          {modules.map(({ name, icon: Icon, active, enabled }) => (
+            <button key={name} className={`nav-item ${(activeModule === name || (active && activeModule === 'Dashboard')) ? 'selected' : ''}`} disabled={!enabled} title={enabled ? name : 'Integración backend pendiente'} onClick={() => { setActiveModule(name); setMenuOpen(false) }}>
+              <Icon size={18} /><span>{name}</span>{!enabled && <span className="nav-badge">Próximamente</span>}
             </button>
           ))}
           <div className="nav-caption nav-caption-spaced">SISTEMA</div>
-          <button className="nav-item"><Settings2 size={18} /><span>Configuración</span></button>
+          <button className="nav-item" disabled title="Integración backend pendiente"><Settings2 size={18} /><span>Configuración</span><span className="nav-badge">Próximamente</span></button>
         </nav>
-        <div className="sidebar-footer"><div className="ai-orb"><Sparkles size={18} /></div><div><strong>IA Nexus activa</strong><small>Optimizando tu operación</small></div></div>
+        <div className="sidebar-footer"><div className="ai-orb"><Network size={18} /></div><div><strong>{apiConnected ? 'API conectada' : 'API sin conexión'}</strong><small>Dashboard, inventario y CRM</small></div></div>
       </aside>
 
       <main className="main-content">
@@ -206,6 +234,7 @@ function App() {
           <div className="topbar-actions"><button className="icon-button"><Search size={19} /></button><button className="icon-button notification"><Bell size={19} /><i /></button><button className="user-avatar" onClick={handleLogout} title="Cerrar sesión">LC</button></div>
         </header>
         <div className="content-container">
+          {activeModule === 'CRM' && crmError && <p className="form-error" role="alert">{crmError}</p>}
           {activeModule === 'Inventarios' ? <InventoryView products={products} search={inventorySearch} status={inventoryStatus} onSearch={setInventorySearch} onStatus={setInventoryStatus} showForm={showProductForm} onShowForm={(value) => { setShowProductForm(value); if (!value) setEditingProduct(null) }} form={productForm} onFormChange={setProductForm} onSubmit={handleCreateProduct} onEdit={editProduct} onDelete={removeProduct} editing={Boolean(editingProduct)} error={inventoryError} /> : activeModule === 'CRM' ? <CrmView customers={customers} search={crmSearch} status={crmStatus} onSearch={setCrmSearch} onStatus={setCrmStatus} showForm={showCustomerForm} onShowForm={(value) => { setShowCustomerForm(value); if (!value) setEditingCustomer(null) }} form={customerForm} onFormChange={setCustomerForm} onSubmit={saveCustomer} onEdit={editCustomer} onDelete={removeCustomer} editing={Boolean(editingCustomer)} /> : <>
           <section className="welcome-row"><div><p className="eyebrow">MIÉRCOLES, 18 DE JUNIO DE 2025</p><h1>Buenos días, <span>Luisa</span></h1><p className="subtitle">Aquí tienes el pulso de tu negocio en tiempo real.</p></div><div className="welcome-actions"><span className={`connection-status ${apiConnected ? 'connected' : ''}`}><i /> {apiConnected ? 'API conectada' : 'Datos de demostración'}</span><button className="primary-button"><ArrowUpRight size={17} /> Ver reportes</button></div></section>
           <section className="metric-grid">{metricDefinitions.map(({ label, value, change, icon: Icon, tone }) => <article className="metric-card" key={label}><div className={`metric-icon ${tone}`}><Icon size={20} /></div><div className="metric-info"><span>{label}</span><strong>{value(summary)}</strong><small><ArrowUpRight size={13} /> +{change(summary)}% <em>vs. mes anterior</em></small></div></article>)}</section>
