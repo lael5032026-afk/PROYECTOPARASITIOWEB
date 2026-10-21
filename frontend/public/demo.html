@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>LAEL Nexus · Demo HTML</title>
+  <style>
+    :root{font-family:Arial, sans-serif;color:#dceafa;background:#080d13;--blue:#007bff;--line:#20384f;--muted:#7891aa}*{box-sizing:border-box}body{margin:0;min-width:320px;background:radial-gradient(circle at 70% 0,#0b3158 0,transparent 38%),#080d13}button,input,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle,#092e50 0,transparent 42%)}.login-card,.panel{background:linear-gradient(145deg,#111f2d,#0d151e);border:1px solid #285273;border-radius:14px;box-shadow:0 25px 80px #0009}.login-card{width:min(430px,100%);padding:38px}.brand{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:35px}.shield{display:grid;place-items:center;width:47px;height:47px;border:1px solid #1687ff;border-radius:10px;background:#07518d;color:#a8dcff;font-size:24px}.brand strong,.brand span{display:block;font-size:20px;letter-spacing:2px}.brand span{font-size:11px;color:#6dbaff;letter-spacing:4px;margin-top:4px}.eyebrow{color:#6d8aa4;font-size:10px;letter-spacing:1.5px;font-weight:bold}.login h1{font-size:23px;text-align:center;margin:9px 0}.login-sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:28px}.form-group{display:block;color:#a8bdd0;font-size:12px;margin:15px 0}.form-group input,.toolbar input,.toolbar select{width:100%;padding:12px;border-radius:6px;border:1px solid #2b4961;background:#09131d;color:#e6f3ff;outline:none;margin-top:7px}.password{position:relative}.password button{position:absolute;right:7px;bottom:7px;background:none;border:0;color:#7191ac}.primary{width:100%;padding:12px;border:0;border-radius:6px;background:linear-gradient(100deg,#006bd8,#0096ff);color:#fff;font-weight:bold}.demo{margin-top:20px;padding:10px;text-align:center;color:#91c8ec;background:#0b304e;border:1px solid #1c6595;border-radius:6px;font-size:10px}.error{color:#f0808a;font-size:12px}.app{min-height:100vh;display:flex}.side{width:245px;flex-shrink:0;padding:25px 15px;border-right:1px solid #182432;background:#091018}.side .brand{justify-content:flex-start;margin:0 10px 35px}.side .shield{width:38px;height:38px;font-size:18px}.side .brand strong{font-size:16px}.side .brand span{font-size:9px}.nav-title{color:#607b95;font-size:10px;letter-spacing:1.5px;margin:20px 11px 9px}.nav{width:100%;padding:11px;border:0;border-radius:6px;background:transparent;color:#7890aa;text-align:left;margin:2px 0}.nav.active,.nav:hover{color:#fff;background:#0d3152;border-left:2px solid #1687ff}.main{flex:1}.top{height:72px;padding:0 35px;border-bottom:1px solid #182432;display:flex;align-items:center;justify-content:space-between}.top span{color:#7190aa;font-size:12px}.avatar{background:#174e7d;border:1px solid #2785c7;border-radius:50%;color:#b9e2ff;padding:9px}.content{max-width:1300px;margin:auto;padding:38px}.welcome{display:flex;align-items:end;justify-content:space-between;margin-bottom:28px}.welcome h1{font-size:28px;margin:8px 0}.welcome h1 span{color:#2c9aff}.muted{color:var(--muted);font-size:13px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{padding:20px;border:1px solid var(--line);border-radius:9px;background:linear-gradient(145deg,#111f2d,#0d151e)}.card small,.card strong{display:block}.card small{color:#8198ae}.card strong{font-size:20px;margin-top:8px}.up{color:#35d398;font-size:11px!important;margin-top:7px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px}.panel{padding:22px}.panel h2{font-size:17px;margin:7px 0 20px}.chart{height:170px;display:flex;align-items:end;gap:9px;padding:15px 5px}.bar{flex:1;background:linear-gradient(#1687ff,#073661);border-radius:4px 4px 0 0}.activity{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid #1a2d3e;color:#9bb2c5;font-size:12px}.inventory-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:23px}.inventory-head h1{margin:7px 0;font-size:28px}.toolbar{display:flex;gap:12px;margin-bottom:16px}.toolbar input{margin:0;max-width:450px}.toolbar select{margin:0;width:150px}.table-wrap{overflow:auto}table{width:100%;min-width:720px;border-collapse:collapse}th{color:#64829c;font-size:10px;text-align:left;padding:12px 9px;border-bottom:1px solid var(--line)}td{padding:14px 9px;border-bottom:1px solid #192b3b;color:#9bb1c2;font-size:12px}.badge{border-radius:12px;padding:4px 8px;font-size:10px}.ok{background:#123e38;color:#51d7a1}.low{background:#4b3819;color:#edbd5c}.out{background:#4e2028;color:#f0808a}.actions button{background:#14283a;color:#8fc2e6;border:1px solid #2c536f;border-radius:4px;padding:5px 7px;font-size:10px;margin-right:4px}.actions .remove{color:#f0808a}.modal{position:fixed;inset:0;background:#000b;display:grid;place-items:center;padding:20px}.modal-box{width:min(430px,100%);padding:25px;background:#101d2a;border:1px solid #2b587b;border-radius:10px}.modal-head{display:flex;justify-content:space-between}.modal-head button{background:none;color:#b5cce0;border:0}.footer{margin-top:30px;color:#526e86;font-size:10px}@media(max-width:850px){.side{position:fixed;z-index:3;inset:0 auto 0 0;transform:translateX(-100%);transition:.2s}.side.open{transform:translateX(0)}.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.content{padding:25px 18px}.menu{display:block!important}.welcome{align-items:start;flex-direction:column;gap:15px}}@media(max-width:500px){.cards{grid-template-columns:1fr}.login-card{padding:28px 21px}.toolbar{flex-direction:column}.toolbar select{width:100%}.top{padding:0 18px}.menu{display:block!important}.welcome h1,.inventory-head h1{font-size:22px}}.menu{display:none;background:none;border:0;color:#cde1f4;font-size:22px}
+  </style>
+</head>
+<body>
+  <section id="login" class="login">
+    <form class="login-card" id="loginForm">
+      <div class="brand"><div class="shield">⬡</div><div><strong>LAEL</strong><span>NEXUS</span></div></div>
+      <p class="eyebrow" style="text-align:center">PLATAFORMA EMPRESARIAL</p><h1>Bienvenido de nuevo</h1><p class="login-sub">Accede a tu centro de operaciones inteligente.</p>
+      <label class="form-group">Correo electrónico<input id="email" type="email" required placeholder="tu@empresa.com"></label>
+      <label class="form-group">Contraseña<div class="password"><input id="password" type="password" required placeholder="••••••••"><button type="button" id="togglePassword">Ver</button></div></label>
+      <p id="loginError" class="error"></p><button class="primary" type="submit">Iniciar sesión →</button>
+      <div class="demo">Demo: <b>admin@laelnexus.com</b> · <b>LAEL2026</b></div>
+    </form>
+  </section>
+
+  <section id="application" class="app hidden">
+    <aside id="sidebar" class="side"><div class="brand"><div class="shield">⬡</div><div><strong>LAEL</strong><span>NEXUS</span></div></div><div class="nav-title">PLATAFORMA</div><button class="nav active" data-view="dashboard">▦ &nbsp; Dashboard</button><button class="nav" data-view="inventory">▣ &nbsp; Inventarios</button><button class="nav">▤ &nbsp; Facturación</button><button class="nav">◉ &nbsp; Nómina</button><button class="nav">♙ &nbsp; CRM</button><button class="nav">⌘ &nbsp; Automatización</button></aside>
+    <main class="main"><header class="top"><button class="menu" id="menu">☰</button><span>Plataforma / <b id="breadcrumb">Dashboard</b></span><button class="avatar" id="logout" title="Cerrar sesión">LC</button></header><div class="content"><div id="dashboardView"><section class="welcome"><div><p class="eyebrow">MIÉRCOLES, 18 DE JUNIO DE 2025</p><h1>Buenos días, <span>Luisa</span></h1><p class="muted">Aquí tienes el pulso de tu negocio en tiempo real.</p></div><button class="primary" style="width:auto">↗ Ver reportes</button></section><section class="cards"><div class="card"><small>Ventas del mes</small><strong>$128,450</strong><small class="up">↗ +18.4%</small></div><div class="card"><small>Órdenes activas</small><strong>1,284</strong><small class="up">↗ +12.8%</small></div><div class="card"><small>Clientes activos</small><strong>3,842</strong><small class="up">↗ +8.2%</small></div><div class="card"><small>Flujos automatizados</small><strong>64</strong><small class="up">↗ +24.6%</small></div></section><section class="grid"><article class="panel"><p class="eyebrow">RENDIMIENTO</p><h2>Resumen de ventas</h2><div class="chart"><i class="bar" style="height:40%"></i><i class="bar" style="height:55%"></i><i class="bar" style="height:46%"></i><i class="bar" style="height:68%"></i><i class="bar" style="height:61%"></i><i class="bar" style="height:88%"></i></div></article><article class="panel"><p class="eyebrow">OPERACIÓN</p><h2>Actividad reciente</h2><div class="activity"><span>✓ Factura emitida</span><small>Hace 8 min</small></div><div class="activity"><span>▣ Inventario actualizado</span><small>Hace 26 min</small></div><div class="activity"><span>✦ Predicción completada</span><small>Hace 1 h</small></div><div class="activity"><span>♙ Nuevo cliente registrado</span><small>Hace 2 h</small></div></article></section><p class="footer">LAEL Nexus · Unifica. Automatiza. Evoluciona.</p></div>
+
+      <div id="inventoryView" class="hidden"><section class="inventory-head"><div><p class="eyebrow">CORE EMPRESARIAL</p><h1>Inventarios</h1><p class="muted">Controla existencias, costes y disponibilidad en tiempo real.</p></div><button class="primary" style="width:auto" id="newProduct">＋ Nuevo producto</button></section><section class="cards"><div class="card"><small>Productos registrados</small><strong id="totalProducts">0</strong></div><div class="card"><small>Unidades en stock</small><strong id="totalStock">0</strong></div><div class="card"><small>Stock bajo</small><strong id="lowStock">0</strong></div><div class="card"><small>Agotados</small><strong id="outStock">0</strong></div></section><section class="panel" style="margin-top:15px"><div class="toolbar"><input id="search" placeholder="Buscar nombre, SKU o categoría"><select id="status"><option>Todos</option><option>Óptimo</option><option>Bajo</option><option>Agotado</option></select></div><div class="table-wrap"><table><thead><tr><th>Producto</th><th>Categoría</th><th>SKU</th><th>Stock</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="productRows"></tbody></table></div></section></div></div></main>
+  </section>
+
+  <div id="modal" class="modal hidden"><form class="modal-box" id="productForm"><div class="modal-head"><div><p class="eyebrow">INVENTARIO</p><h2 id="modalTitle">Nuevo producto</h2></div><button type="button" id="closeModal">✕</button></div><label class="form-group">Nombre<input id="productName" required></label><label class="form-group">Categoría<select id="productCategory"><option>Electrónica</option><option>Accesorios</option><option>Mobiliario</option><option>Oficina</option></select></label><label class="form-group">Stock<input id="productStock" type="number" min="0" required></label><label class="form-group">Stock mínimo<input id="productMinimum" type="number" min="0" required></label><label class="form-group">Precio<input id="productPrice" type="number" min="0" step="0.01" required></label><button class="primary" type="submit">Guardar producto</button></form></div>
+  <script>
+    const API_URL = 'http://localhost:5080'
+    let products = []
+    let editingId = null
+
+    const $ = (id) => document.getElementById(id)
+    const status = (product) => product.status
+
+    $('togglePassword').onclick = () => {
+      const password = $('password')
+      password.type = password.type === 'password' ? 'text' : 'password'
+      $('togglePassword').textContent = password.type === 'password' ? 'Ver' : 'Ocultar'
+    }
+
+    $('loginForm').onsubmit = (event) => {
+      event.preventDefault()
+      if ($('email').value.toLowerCase() !== 'admin@laelnexus.com' || $('password').value !== 'LAEL2026') {
+        $('loginError').textContent = 'Correo o contraseña incorrectos.'
+        return
+      }
+      sessionStorage.setItem('lael-demo-auth', 'true')
+      showApp()
+    }
+
+    async function showApp() {
+      $('login').classList.add('hidden')
+      $('application').classList.remove('hidden')
+      await loadInventory()
+    }
+
+    function logout() {
+      sessionStorage.removeItem('lael-demo-auth')
+      $('application').classList.add('hidden')
+      $('login').classList.remove('hidden')
+    }
+
+    $('logout').onclick = logout
+    $('menu').onclick = () => $('sidebar').classList.toggle('open')
+
+    document.querySelectorAll('.nav').forEach((nav) => {
+      nav.onclick = () => {
+        const view = nav.dataset.view
+        if (!view) return
+        document.querySelectorAll('.nav').forEach((item) => item.classList.remove('active'))
+        nav.classList.add('active')
+        $('dashboardView').classList.toggle('hidden', view !== 'dashboard')
+        $('inventoryView').classList.toggle('hidden', view !== 'inventory')
+        $('breadcrumb').textContent = view === 'inventory' ? 'Inventarios' : 'Dashboard'
+        $('sidebar').classList.remove('open')
+        if (view === 'inventory') loadInventory()
+      }
+    })
+
+    async function loadInventory() {
+      try {
+        const query = new URLSearchParams()
+        if ($('search').value) query.set('search', $('search').value)
+        if ($('status').value !== 'Todos') query.set('status', $('status').value)
+        const response = await fetch(`${API_URL}/api/inventory?${query}`)
+        if (!response.ok) throw new Error('No se pudo cargar el inventario')
+        products = await response.json()
+        render()
+      } catch (error) {
+        $('productRows').innerHTML = `<tr><td colspan="7" style="color:#f0808a">${error.message}. Comprueba que la API esté activa en ${API_URL}.</td></tr>`
+      }
+    }
+
+    function render() {
+      const total = products.reduce((sum, product) => sum + product.stock, 0)
+      $('totalProducts').textContent = products.length
+      $('totalStock').textContent = total.toLocaleString('es-ES')
+      $('lowStock').textContent = products.filter((product) => status(product) === 'Bajo').length
+      $('outStock').textContent = products.filter((product) => status(product) === 'Agotado').length
+      $('productRows').innerHTML = products.map((product) => `
+        <tr>
+          <td><b>${product.name}</b></td><td>${product.category}</td><td>${product.sku}</td>
+          <td><b>${product.stock}</b><small> mín. ${product.minimumStock}</small></td>
+          <td>$${Number(product.price).toFixed(2)}</td>
+          <td><span class="badge ${status(product) === 'Óptimo' ? 'ok' : status(product) === 'Bajo' ? 'low' : 'out'}">${status(product)}</span></td>
+          <td class="actions"><button onclick="editProduct(${product.id})">Editar</button><button class="remove" onclick="removeProduct(${product.id})">Eliminar</button></td>
+        </tr>`).join('')
+    }
+
+    $('search').oninput = loadInventory
+    $('status').onchange = loadInventory
+    $('newProduct').onclick = () => openModal()
+    $('closeModal').onclick = () => $('modal').classList.add('hidden')
+
+    function openModal(product) {
+      editingId = product?.id || null
+      $('modalTitle').textContent = editingId ? 'Editar producto' : 'Nuevo producto'
+      $('productName').value = product?.name || ''
+      $('productCategory').value = product?.category || 'Electrónica'
+      $('productStock').value = product?.stock ?? 0
+      $('productMinimum').value = product?.minimumStock ?? 5
+      $('productPrice').value = product?.price ?? 0
+      $('modal').classList.remove('hidden')
+    }
+
+    window.editProduct = (id) => openModal(products.find((product) => product.id === id))
+
+    window.removeProduct = async (id) => {
+      if (!confirm('¿Eliminar este producto de SQL Server?')) return
+      const response = await fetch(`${API_URL}/api/inventory/${id}`, { method: 'DELETE' })
+      if (!response.ok) return alert('No se pudo eliminar el producto.')
+      await loadInventory()
+    }
+
+    $('productForm').onsubmit = async (event) => {
+      event.preventDefault()
+      const payload = {
+        name: $('productName').value,
+        category: $('productCategory').value,
+        stock: Number($('productStock').value),
+        minimumStock: Number($('productMinimum').value),
+        price: Number($('productPrice').value)
+      }
+      const response = await fetch(`${API_URL}/api/inventory${editingId ? `/${editingId}` : ''}`, {
+        method: editingId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!response.ok) return alert('No se pudo guardar el producto.')
+      $('modal').classList.add('hidden')
+      await loadInventory()
+    }
+
+    if (sessionStorage.getItem('lael-demo-auth') === 'true') showApp()
+  </script>
+</body>
+</html>
