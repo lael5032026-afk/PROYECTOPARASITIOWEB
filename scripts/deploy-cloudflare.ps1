@@ -1,3 +1,9 @@
+param(
+    [switch]$ConfirmFreePlan,
+    [switch]$ConfirmAccount,
+    [string]$ProjectName
+)
+
 $ErrorActionPreference = 'Stop'
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
@@ -22,31 +28,44 @@ try {
     Write-Host 'Continue only if your Cloudflare account is on Workers Free; Pages and D1 have free usage limits.'
     Write-Host 'Do not upgrade to a paid Workers plan if you do not want charges.'
     Write-Host 'Customer order details and plan requests will be stored in your Cloudflare D1 database; this demo does not send email or accept payments.'
-    $freePlanConfirmation = Read-Host 'Confirm your account uses Workers Free. Type FREE to continue'
-    if ($freePlanConfirmation -cne 'FREE') {
-        Write-Host 'Deployment cancelled. No Cloudflare resources were created.'
-        return
-    }
-
-    npx wrangler login
-    if ($LASTEXITCODE -ne 0) {
-        throw 'Cloudflare sign-in failed. No deployment was made.'
+    if (-not $ConfirmFreePlan) {
+        $freePlanConfirmation = Read-Host 'Confirm your account uses Workers Free. Type FREE to continue'
+        if ($freePlanConfirmation -cne 'FREE') {
+            Write-Host 'Deployment cancelled. No Cloudflare resources were created.'
+            return
+        }
     }
 
     $identityOutput = & npx wrangler whoami 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        throw 'Could not verify the signed-in Cloudflare account.'
+    $identityExitCode = $LASTEXITCODE
+    $identityText = $identityOutput -join ' '
+    if ($identityExitCode -ne 0 -or $identityText -match 'not authenticated') {
+        Write-Host 'Wrangler needs an interactive Cloudflare sign-in; the browser will open.'
+        npx wrangler login
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Cloudflare sign-in failed. Run this script from an interactive PowerShell terminal. Do not share API tokens or passwords.'
+        }
+        $identityOutput = & npx wrangler whoami 2>&1
+        $identityExitCode = $LASTEXITCODE
+        $identityText = $identityOutput -join ' '
+        if ($identityExitCode -ne 0 -or $identityText -match 'not authenticated') {
+            throw 'Could not verify Cloudflare sign-in after login.'
+        }
     }
-    Write-Host ($identityOutput -join [Environment]::NewLine)
-    $accountConfirmation = Read-Host 'Confirm this is your Cloudflare account by typing DEPLOY'
-    if ($accountConfirmation -cne 'DEPLOY') {
-        Write-Host 'Account was not confirmed. No Cloudflare resources were created.'
-        return
+    Write-Host 'Cloudflare account authentication verified.'
+    if (-not $ConfirmAccount) {
+        $accountConfirmation = Read-Host 'Confirm this is your Cloudflare account by typing DEPLOY'
+        if ($accountConfirmation -cne 'DEPLOY') {
+            Write-Host 'Account was not confirmed. No Cloudflare resources were created.'
+            return
+        }
     }
 
-    $projectName = Read-Host "Cloudflare Pages project name [$defaultProjectName]"
     if ([string]::IsNullOrWhiteSpace($projectName)) {
-        $projectName = $defaultProjectName
+        $projectName = Read-Host "Cloudflare Pages project name [$defaultProjectName]"
+        if ([string]::IsNullOrWhiteSpace($projectName)) {
+            $projectName = $defaultProjectName
+        }
     }
     if ($projectName -notmatch '^[a-z0-9][a-z0-9-]{1,56}[a-z0-9]$') {
         throw 'Use a project name of 3-58 lowercase letters, numbers, or hyphens; it cannot start or end with a hyphen.'
